@@ -30,8 +30,7 @@ end
 
 function cat.init_module()
 	cat.bump = cat.require("module/bump")
-	cat.scene = cat.require("module/scene")
-	cat.game_run = cat.require("module/game_run")
+	cat.game = cat.require("module/game")
 end
 
 function cat.init()

@@ -1,4 +1,4 @@
-local base_node = cat.require"mosule/scene/base_node"
+local base_node = cat.require"module/game/scene/base_node"
 
 local node = cat.object("psoition_node",base_node){
     position = nil,

@@ -1,4 +1,4 @@
-local node = cat.require"module/scene/node/node"
+local node = cat.require"module/game/scene/node/node"
 --hump.camera:
 --https://github.com/vrld/hump
 

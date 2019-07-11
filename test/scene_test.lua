@@ -1,5 +1,5 @@
 return function()
-    local node = cat.require"module/scene/node/node"
+    local node = cat.require"module/game/scene/node/node"
     local object = cat.class("object",node){}
 
     function object:__init__()
@@ -50,8 +50,8 @@ return function()
         love.graphics.print(love.timer.getFPS())
     end
 
-    local game_run = cat.game_run.new_game_run()
-    local scene = cat.scene.new_scene()
+    local game_run = cat.game.new_game_run()
+    local scene = cat.game.new_scene()
 
     local num = 10000
 

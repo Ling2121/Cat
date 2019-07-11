@@ -7,7 +7,7 @@
     位置节点可以有子节点，子节点的位置原点为根节点
 --]]
 local depth_list = cat.require"base/list/depth_list"
-local node = cat.require"module/scene/node/node"
+local node = cat.require"module/game/scene/node/node"
 local camera = cat.require"base/camera"
 
 local scene = cat.object("scene",node){
@@ -94,6 +94,4 @@ function scene:draw()
     end    
 end
 
-return {
-    new_scene = scene
-}
+return scene
