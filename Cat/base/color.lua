@@ -29,7 +29,7 @@ return function(r,g,b,a)
     }
 
     function color:unpack()
-        return self.r,self.g,self.b,self.a
+        return self.r * COLOR_DIV,self.g * COLOR_DIV,self.b * COLOR_DIV,self.a * COLOR_DIV
     end
 
     function color:to_hsv()

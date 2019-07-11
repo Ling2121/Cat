@@ -1,13 +1,13 @@
-local base_node = cat.require"module/game/scene/base_node"
+local node = cat.require"module/game/scene/node/node"
 
-local node = cat.object("psoition_node",base_node){
+local node = cat.object("psoition_node",node){
     position = nil,
     _root = nil,
     _child = {},
 }
 
 function node:__init__(x,y)
-    base_node.__init__(self)
+    node.__init__(self)
     self.position = cat.position(x,y)
     self:connect("exit_scene",self,"__exit_scene__")
 end

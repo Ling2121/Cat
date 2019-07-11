@@ -40,6 +40,10 @@ function cat.init()
 	end
 	cat.init_base()
 	cat.init_module()
+
+
+	cat.game_run = cat.game.new_game_run()
+	cat.assets = cat.game.new_assets_mng()
 	return cat
 end
 
