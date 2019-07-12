@@ -31,6 +31,7 @@ end
 function cat.init_module()
 	cat.bump = cat.require("module/bump")
 	cat.game = cat.require("module/game")
+	cat.graphics = cat.require("module/graphics")
 end
 
 function cat.init()

@@ -13,11 +13,13 @@ end
 
 function base_graphics:set_color(r,g,b,a)
     self.color.r = r or  self.color.r
-    self.color.g = r or  self.color.g
-    self.color.b = r or  self.color.b
-    self.color.a = r or  self.color.a
+    self.color.g = g or  self.color.g
+    self.color.b = b or  self.color.b
+    self.color.a = a or  255
 
     return self
 end
+
+function base_graphics:move(dx,dy)end
 
 return base_graphics

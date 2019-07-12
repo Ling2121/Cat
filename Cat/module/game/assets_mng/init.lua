@@ -7,20 +7,20 @@ local assets_mng = cat.class("assets_mng"){
 }
 
 function assets_mng:__init__()
-    assets_mng.image = assets("image",function(path,config)
+    self.image = assets("image",function(path,config)
         config = config or {}
         config.filter_mode = config.filter_mode or "nearest" -- or "linear"
         love.graphics.setDefaultFilter(config.filter_mode)
         return love.graphics.newImage(path)
     end)
 
-    assets_mng.audio = assets("audio",function(path,config)
+    self.audio = assets("audio",function(path,config)
         config = config or {}
         config.source_type = config.source_type or "stream"
         return love.audio.newSource(path,config.source_type)
     end)
 
-    assets_mng.font = assets("font",function(path,config)
+    self.font = assets("font",function(path,config)
         config = config or {}
         config.size = config.size or 12
         config.default = config.size or false
@@ -37,6 +37,8 @@ function assets_mng:add_assets_type(type,load_func)
         self[type] = assets(type,load_func)
     end
 end
+
+return assets_mng
 
 
 

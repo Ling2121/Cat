@@ -1,15 +1,19 @@
-local node = cat.require"module/game/scene/node/node"
+local bnode = cat.require"module/game/scene/node/node"
 
-local node = cat.object("psoition_node",node){
+local node = cat.object("psoition_node",bnode){
     position = nil,
     _root = nil,
     _child = {},
 }
 
 function node:__init__(x,y)
-    node.__init__(self)
+    bnode.__init__(self)
     self.position = cat.position(x,y)
     self:connect("exit_scene",self,"__exit_scene__")
+end
+
+function node:_set_root(node)
+    self.position:set_root(node.position)
 end
 
 function node:set_root(node)
@@ -17,14 +21,16 @@ function node:set_root(node)
     if self._root == node then return else
         self:clear_root()
     end
-    self.position:set_root(node.position)
+    self:_set_root(node)
     self._root = node
     node._child[self.name] = self
     return self
 end
 
 function node:clear_root()
-    self._root._child[self.name] = nil
+    if self.root then
+        self._root._child[self.name] = nil
+    end
     self._root = nil
     return self
 end
@@ -55,6 +61,16 @@ end
 
 function node:get_position()
     return self.position:unpack()
+end
+
+function node:set_position(x,y)
+    self.position.x = x or self.position.x
+    self.position.y = y or self.position.y
+end
+
+function node:move(dx,dy)
+    self.position.x = self.position.x + dx
+    self.position.y = self.position.y + dy
 end
 
 return node

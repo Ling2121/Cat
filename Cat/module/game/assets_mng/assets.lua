@@ -10,8 +10,8 @@ local function args(a,b,c)
 	return a,b,c
 end
 
-function assets:__init__(type,load_func)
-    self.type = type
+function assets:__init__(_type,load_func)
+    self.type = _type
     if type(load_func) == "function" then
         self.load = load_func
     end
