@@ -15,11 +15,6 @@ function assets:__init__(_type,load_func)
     if type(load_func) == "function" then
         self.load = load_func
     end
-
-
-    self.__call = function(self,path)
-        return self._assets[path]
-    end
 end
 
 function assets:load(path,config) 
@@ -30,6 +25,7 @@ end
 function assets:add_assets(a,b,c)
     local name,path,config = args(a,b,c)
     self._assets[name] = self:load(path,config)
+
     return self
 end
 

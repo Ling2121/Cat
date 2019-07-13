@@ -47,7 +47,7 @@ function camera.smooth.damped(stiffness)
 	end
 end
 
-function camera:__init(x,y, scale, rot, smoother)
+function camera:__init__(x,y, scale, rot, smoother)
     self.x,self.y = x or love.graphics.getWidth()/2, y or love.graphics.getHeight()/2
     self.scale = scale or 1
     self.rot = rot or 0

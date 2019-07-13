@@ -21,7 +21,7 @@ do
     for _,name in ipairs(cat.LOVE_CALLBACK) do
         if scene[name] == nil then
             scene[name] = function(self,...)
-                for node in self.node:items() do
+                for node in self._node:items() do
                     if node[name] then
                         node[name](node,...)
                     end
@@ -33,7 +33,7 @@ end
 
 function scene:__init__()
     node.__init__(self)
-    self.node = depth_list()
+    self._node = depth_list()
     self.camera = camera()
 
     self:signal("enter_scene")
@@ -47,10 +47,11 @@ function scene:add_node(node)
         if self._all_node[name] == nil then
             self._all_node[name] = node
             node.at_scene = self
-            self.node:insert_node(node)
+            self._node:insert_node(node)
             node:emit_signal("enter_scene",self)
         end
     end
+    return self
 end
 
 function scene:remove_node(node_or_name)
@@ -62,15 +63,16 @@ function scene:remove_node(node_or_name)
     end
     if rmn then
         self._all_node[rmn.name] = nil
-        self.node:remove_node(rmn)
+        self._node:remove_node(rmn)
         rmn:emit_signal("exit_scene",self)
     end
+    return self
 end
 
 function scene:update(dt)
-    for node in self.node:items() do
+    for node in self._node:items() do
         if not node._stop_update then
-            self.node:_update_node_depth(node)
+            self._node:_update_node_depth(node)
             if node.update then
                 node:update(dt)
             end
@@ -79,7 +81,7 @@ function scene:update(dt)
 end
 
 function scene:draw()
-    for node in self.node:items() do
+    for node in self._node:items() do
         if not node._stop_disply then
             if node.screen_draw then
                 node:screen_draw(self.camera)

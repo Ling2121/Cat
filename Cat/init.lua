@@ -21,6 +21,23 @@ function cat.require(path)
 	return require(cat.PATH..path)
 end
 
+function cat.set_game_run(game_run)
+	cat.game_run = game_run
+end
+
+function cat.set_assets(assets)
+	cat.assets = assets
+end
+
+function cat.get_mouse_position()
+	local mx,my = love.mouse.getPosition()
+	local scene = cat.game_run.scene
+	if scene then
+		return scene.camera:to_camera_pos(mx,my)
+	end
+	return mx,my
+end
+
 function cat.init_base()
 	cat.class  = cat.require("base/class")
 	cat.object = cat.require("base/object")

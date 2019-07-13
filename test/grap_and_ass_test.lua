@@ -4,13 +4,13 @@ local game_run = cat.game.new_game_run()
 local assets = cat.game.new_assets_mng()
 local scene = cat.game.new_scene()
 
-assets.image:add_assets("image_a","test/map.png")
+cat.assets.image:add_assets("image_a","test/map.png")
 
 local circ = cat.graphics.new_circle("fill",-300,-300,60):set_color(0,0,255)
 
 local rect = cat.graphics.new_rectangle("fill",100,100,100,100):set_color(255,0,0,255)
 local poly = cat.graphics.new_polygon("fill",250,100,100,250,200,250)
-local img = cat.graphics.new_image("image_a",100,100)
+local img = cat.graphics.new_image("image_a",0,0)
 
 poly:set_root(circ)
 
