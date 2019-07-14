@@ -41,25 +41,25 @@ return function(name,ext_class)
 
     --名为signal_name的信号触发时运行object的to_func函数
     function object:connect(signal_name,object,to_func)
-        local object = self.__all_signal__[signal_name]
-        if object then
-            object:connect(object,to_func)
+        local signal = self.__all_signal__[signal_name]
+        if signal then
+            signal:connect(object,to_func)
         end
     end
 
     --断开与signal_nam信号连接的名为func_name的函数
     function object:disconnect(signal_name,func_name)
-        local object = self.__all_signal__[signal_name]
-        if object then
-            object:connect(func_name)
+        local signal = self.__all_signal__[signal_name]
+        if signal then
+            signal:connect(func_name)
         end
     end
 
     --发送signal_name信号,...是要输入的参数
     function object:emit_signal(signal_name,...)
-        local object = self.__all_signal__[signal_name]
-        if object then
-            object:emit_signal(...)
+        local signal = self.__all_signal__[signal_name]
+        if signal then
+            signal:emit_signal(...)
         end
     end
 

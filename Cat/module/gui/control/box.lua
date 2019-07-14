@@ -27,6 +27,13 @@ function box:__init__(x,y,w,h)
     self._control = depth_list()
 end
 
+function box:config_style(style)
+    style = style or {}
+    self.style.box_fill_mode = style.box_fill_mode or "line"
+    self.style.box_color = style.box_color or cat.color(255,255,255,255)
+    return self
+end
+
 function box:add_control(control)
     if control then
         local name = control.name or control
@@ -34,6 +41,7 @@ function box:add_control(control)
             self._all_control[name] = control
             control.at_box = self
             self._control:insert_node(control)
+            control:set_root(self)
             control:emit_signal("add_to_box",self)
         end
     end
@@ -82,7 +90,36 @@ function box:update(dt)
             if self.control.update then
                 self.control:update(dt)
             end
+        else
+            self:drag_update()
         end
+    else
+        if self.control then
+            self.control._is_select = false
+            self.control = nil
+        end
+    end
+end
+
+function box:mousepressed(x,y,button)
+    if self.control then
+        self.control:emit_signal("mouse_press",button)
+        if self.control.mousepressed then
+            self.control:mousepressed(x,y,button)
+        end
+    else
+        self:drag_mousepressed()
+    end
+end
+
+function box:mousereleased(x,y,button)
+    if self.control then
+        self.control:emit_signal("mouse_lift",button)
+        if self.control.mousereleased then
+            self.control:mousereleased(x,y,button)
+        end
+    else
+        self:drag_mousereleased()
     end
 end
 
@@ -92,6 +129,9 @@ function box:draw()
             ct:draw()
         end
     end
+    love.graphics.setColor(self.style.box_color:unpack())
+    love.graphics.rectangle(self.style.box_fill_mode,self.position.x,self.position.y,self._max_position.x- self.position.x,self._max_position.y - self.position.y)
+    love.graphics.setColor(255,255,255,255)
 end
 
 return box
