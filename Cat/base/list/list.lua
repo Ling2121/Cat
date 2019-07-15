@@ -104,6 +104,7 @@ function list:insert_node_back(onode)
     local tail = self.__tail_node
     tail.__next_node__ = onode
     onode.__up_node__ = tail
+    onode.__next_node__ = nil
     self.__tail_node = onode
     self.__all_node[onode] = onode
 	self.__node_number = self.__node_number + 1
@@ -213,8 +214,8 @@ function list:nswap(na,nb)--基于节点的交换
         nb.__next_node__    = na	   		--  A < - > nb - - > na - - - b
 		na.__up_node__	  = nb	   		--  A < - > nb < - > na - - > b
         na.__next_node__    = nb_ne		--  A < - > nb < - > na - - > b
-		if nb_ne then
-			nb_ne.__up_node__ = na				--  A < - > nb < - > na - - > b
+		if nb_ne ~= nil then
+            nb_ne.__up_node__ = na				--  A < - > nb < - > na - - > b
 		end
     elseif na_up == nb then--相邻   A < - > nb < - > na < - > B
         na.__up_node__      = nb_up		--  A < - - na - - - nb - - - b
@@ -239,12 +240,14 @@ function list:nswap(na,nb)--基于节点的交换
             nb_ne.__up_node__ = na   	    -- 	A < - > nb < - > B < - > na < - > C
         end
     end
-    if na.__next_node__ == nil then
+    if na_ne == nil then
         self.__tail_node = na
     end
-    if nb.__next_node__ == nil then
+    if nb_ne == nil then
         self.__tail_node = nb
     end
+
+    return self
 end
 
 function list:items()

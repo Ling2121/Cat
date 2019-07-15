@@ -1,16 +1,19 @@
 local control = cat.require("module/gui/control/control")
 local Box = cat.require("module/gui/control/box")
+local button = cat.require("module/gui/control/button")
 local scene = cat.game.new_scene()
 
 local box = Box():config_style({
-    box_color = cat.color(100,100,100,100),
+    box_color = cat.color(100,100,100,255),
     box_fill_mode = "fill",
 })
 local box2 = Box()
 
 return function()
     local control_a = control(100,100,100,40)
+    local button_a = button("Button_a",150,150,100,45)
     control_a._can_drag = true
+    button_a._can_drag = true
     box._can_drag = true
 
     box2._is_select = true
@@ -36,10 +39,16 @@ return function()
         print("exit")
     end
 
-    --control_a:connect("mouse_enter",control_a,"__enter")
-    --control_a:connect("mouse_exit",control_a,"__exit")
+    function button_a:click()
+        print("Cilck!")
+    end
+
+    button_a:connect("mouse_press",button_a,"click")
+
+    
 
 
+    box:add_control(button_a)
     box:add_control(control_a)
     box2:add_control(box)
 

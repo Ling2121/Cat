@@ -1,4 +1,3 @@
-local pnode = cat.require"module/game/scene/node/position_node"
 local depth_list = cat.require"base/list/depth_list"
 local control = cat.require"module/gui/control/control"
 
@@ -67,19 +66,34 @@ end
 
 function box:update(dt)
     if self._is_select then
-        if self.control == nil then
-            for ct in self._control:items() do
+        repeat
+            if self.control and self.control._is_lock then
+                break
+            end
+
+            for ct in self._control:eitems() do
                 if ct:is_hover() then
                     ct._is_select = true
+                    ct._is_hover = true
+                    if self.control and ct ~= self.control then
+                        self.control._is_select = false
+                        self.control._is_hover = false
+                        self.control._is_clicking = false
+                        self.control._is_dragging = false
+                        self.control:emit_signal("mouse_exit")
+                    end
                     self.control = ct
                     ct:emit_signal("mouse_enter")
-                    return
+                    break
                 end
             end
-        else
+        until(true)
+
+        if self.control then
             if not self.control._is_lock then
                 if not self.control:is_hover() then
                     self.control._is_select = false
+                    self.control._is_hover = false
                     self.control:emit_signal("mouse_exit")
                     self.control = nil
                 end
@@ -87,6 +101,7 @@ function box:update(dt)
         end
 
         if self.control then
+            self.control._is_clicking = love.mouse.isDown(1)
             if self.control.update then
                 self.control:update(dt)
             end
@@ -96,6 +111,10 @@ function box:update(dt)
     else
         if self.control then
             self.control._is_select = false
+            self.control._is_hover = false
+            self.control._is_clicking = false
+            self.control._is_dragging = false
+            self.control:emit_signal("mouse_exit")
             self.control = nil
         end
     end
@@ -124,14 +143,14 @@ function box:mousereleased(x,y,button)
 end
 
 function box:draw()
+    love.graphics.setColor(self.style.box_color:unpack())
+    love.graphics.rectangle(self.style.box_fill_mode,self.position.x,self.position.y,self._max_position.x- self.position.x,self._max_position.y - self.position.y)
+    love.graphics.setColor(255,255,255,255)
     for ct in self._control:items() do
         if ct.draw then
             ct:draw()
         end
     end
-    love.graphics.setColor(self.style.box_color:unpack())
-    love.graphics.rectangle(self.style.box_fill_mode,self.position.x,self.position.y,self._max_position.x- self.position.x,self._max_position.y - self.position.y)
-    love.graphics.setColor(255,255,255,255)
 end
 
 return box

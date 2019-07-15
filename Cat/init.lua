@@ -43,6 +43,7 @@ function cat.init_base()
 	cat.object = cat.require("base/object")
 	cat.color  = cat.require("base/color")
 	cat.position = cat.require("base/position")
+	cat.utf8 = cat.require("library/utf8")
 end
 
 function cat.init_module()
@@ -62,6 +63,7 @@ function cat.init()
 
 	cat.game_run = cat.game.new_game_run()
 	cat.assets = cat.game.new_assets_mng()
+	cat.assets.font:add_assets("default",cat.PATH.."assets/default.otf",{size = 15})
 	return cat
 end
 

@@ -22,10 +22,10 @@ end
 
 return function(r,g,b,a)
     local color = {
-        r = r,
-        g = g,
-        b = b,
-        a = a,
+        r = r or 255,
+        g = g or 255,
+        b = b or 255,
+        a = a or 255,
     }
 
     function color:unpack()

@@ -160,4 +160,17 @@ function depth_list:items()
     end
 end
 
+function depth_list:eitems()
+    local node = self.__tail_node
+
+    return function()
+		local n = node
+		if node == self.__root_node then
+			return
+		end
+        node = node.__up_node__
+        return n
+    end
+end
+
 return depth_list

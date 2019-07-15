@@ -2,6 +2,8 @@ local pnode = cat.require"module/game/scene/node/position_node"
 
 local control = cat.class("control",pnode){
     style = {},
+    _width = 0,
+    _height = 0,
     _max_position = nil,
     _is_lock = false,
     _is_select = false,
@@ -16,7 +18,8 @@ function control:__init__(x,y,w,h)
     pnode.__init__(self)
     self.position = cat.position(x or 0,y or 0)
     self._max_position = cat.position(w or love.graphics.getWidth(),h or love.graphics.getHeight()):set_root(self.position)
-
+    self._width = w
+    self._height = h
     self:config_style()
     self:signal("mouse_enter")
     self:signal("mouse_exit")
@@ -29,6 +32,13 @@ end
 function control:config_style(style)
     self.style = style or {}
     return self
+end
+
+function control:set_box(w,h)
+    self._width = w or self._width
+    self._height = h or self._height
+    self._max_position.x = self._width
+    self._max_position.y = self._height
 end
 
 function control:is_hover()
