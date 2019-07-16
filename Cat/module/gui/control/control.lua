@@ -30,7 +30,9 @@ function control:__init__(x,y,w,h)
 end
 
 function control:config_style(style)
-    self.style = style or {}
+    style = style or {}
+    style.color = style.color or cat.color(60,50,150)
+    self.style = style
     return self
 end
 
@@ -81,7 +83,9 @@ function control:drag_mousemoved()
 end
 
 function control:draw()
-    love.graphics.rectangle("fill",self.position.x,self.position.y,self._max_position.x- self.position.x,self._max_position.y - self.position.y)
+    love.graphics.setColor(self.style.color:unpack())
+    love.graphics.rectangle("fill",self.position.x,self.position.y,self._width,self._height)
+    love.graphics.setColor(255,255,255,255)
 end
 
 return control

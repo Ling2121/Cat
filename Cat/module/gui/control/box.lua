@@ -28,8 +28,10 @@ end
 
 function box:config_style(style)
     style = style or {}
-    self.style.box_fill_mode = style.box_fill_mode or "line"
-    self.style.box_color = style.box_color or cat.color(255,255,255,255)
+    style.box_fill_mode = style.box_fill_mode or "line"
+    style.color = style.color or cat.color(255,255,255,255)
+
+    self.style = style
     return self
 end
 
@@ -154,7 +156,7 @@ end
 function box:draw()
     local sx, sy, sw, sh = love.graphics.getScissor()
     love.graphics.intersectScissor(self.position.x,self.position.y,self._width,self._height)
-    love.graphics.setColor(self.style.box_color:unpack())
+    love.graphics.setColor(self.style.color:unpack())
     love.graphics.rectangle(self.style.box_fill_mode,self.position.x,self.position.y,self._width,self._height)
     love.graphics.setColor(255,255,255,255)
     for ct in self._control:items() do
