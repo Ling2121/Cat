@@ -10,14 +10,14 @@ local control = cat.class("control",pnode){
     _is_hover = false,
     _is_clicking = false,
     _is_dragging = false,
-    _drag_offset = {},
+    _drag_offset = {x = 0,y = 0},
     _can_drag = false,
 }
 
 function control:__init__(x,y,w,h)
     pnode.__init__(self)
     self.position = cat.position(x or 0,y or 0)
-    self._max_position = cat.position(w or love.graphics.getWidth(),h or love.graphics.getHeight()):set_root(self.position)
+    self._max_position = cat.position(w,h):set_root(self.position)
     self._width = w
     self._height = h
     self:config_style()
@@ -57,10 +57,7 @@ function control:drag_mousepressed()
         local mx,my = cat.get_mouse_position()
         self._drag_offset.x = mx - self.position._x--_x未经变换的位置
         self._drag_offset.y = my - self.position._y
-        if self._can_drag then
-            self._is_dragging = true
-            self._is_lock = true
-        end
+        self._is_lock = true
     end
 end
 
@@ -73,11 +70,11 @@ function control:drag_mousereleased()
     end
 end
 
-function control:drag_update()
+function control:drag_mousemoved()
     if self._can_drag then
-        if self._is_dragging then
+        if self._is_clicking then
             local mx,my = cat.get_mouse_position()
-            self.position.x = mx - self._drag_offset.x 
+            self.position.x = mx - self._drag_offset.x
             self.position.y = my - self._drag_offset.y
         end
     end

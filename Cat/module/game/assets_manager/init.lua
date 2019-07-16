@@ -23,12 +23,12 @@ function assets_manager:__init__()
     self:add_assets_type("font",function(self,path,config)
         config = config or {}
         config.size = config.size or 12
-        config.default = config.size or false
+        config.default = config.default or false
         if not config.default then
-            return love.graphics.newFont(self,path,config.size)
+            return love.graphics.newFont(path,config.size)
         end
 
-        return love.graphics.newFont(config.size)
+        return love.graphics.newFont(path)
     end)
 end
 

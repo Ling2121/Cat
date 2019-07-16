@@ -63,7 +63,7 @@ function cat.init()
 
 	cat.game_run = cat.game.new_game_run()
 	cat.assets = cat.game.new_assets_mng()
-	cat.assets.font:add_assets("default",cat.PATH.."assets/default.otf",{size = 15})
+	cat.assets.font:add_assets("default",cat.PATH.."assets/default.otf",{size = 16})
 	return cat
 end
 

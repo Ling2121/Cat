@@ -22,7 +22,7 @@ do
 end
 
 function box:__init__(x,y,w,h)
-    control.__init__(self,x,y,w,h)
+    control.__init__(self,x,y,w or love.graphics.getWidth(),h or love.graphics.getHeight())
     self._control = depth_list()
 end
 
@@ -79,7 +79,6 @@ function box:update(dt)
                         self.control._is_select = false
                         self.control._is_hover = false
                         self.control._is_clicking = false
-                        self.control._is_dragging = false
                         self.control:emit_signal("mouse_exit")
                     end
                     self.control = ct
@@ -105,18 +104,28 @@ function box:update(dt)
             if self.control.update then
                 self.control:update(dt)
             end
-        else
-            self:drag_update()
         end
     else
         if self.control then
             self.control._is_select = false
             self.control._is_hover = false
             self.control._is_clicking = false
-            self.control._is_dragging = false
             self.control:emit_signal("mouse_exit")
             self.control = nil
         end
+    end
+end
+
+function box:mousemoved(x,y,dx,dy)
+    if self.control then
+        if self.control._is_clicking then
+            self.control._is_dragging = true
+        end
+        if self.control.mousemoved then
+            self.control:mousemoved(x,y,dx,dy)
+        end
+    else
+        self:drag_mousemoved()
     end
 end
 
@@ -143,14 +152,18 @@ function box:mousereleased(x,y,button)
 end
 
 function box:draw()
+    local sx, sy, sw, sh = love.graphics.getScissor()
+    love.graphics.intersectScissor(self.position.x,self.position.y,self._width,self._height)
     love.graphics.setColor(self.style.box_color:unpack())
-    love.graphics.rectangle(self.style.box_fill_mode,self.position.x,self.position.y,self._max_position.x- self.position.x,self._max_position.y - self.position.y)
+    love.graphics.rectangle(self.style.box_fill_mode,self.position.x,self.position.y,self._width,self._height)
     love.graphics.setColor(255,255,255,255)
     for ct in self._control:items() do
         if ct.draw then
             ct:draw()
         end
     end
+
+    love.graphics.setScissor(sx, sy, sw, sh)
 end
 
 return box

@@ -40,8 +40,8 @@ function button:mousereleased()
     self:drag_mousereleased()
 end
 
-function button:update()
-    self:drag_update()
+function button:mousemoved()
+    self:drag_mousemoved()
 end
 
 function button:draw()
@@ -57,6 +57,10 @@ function button:draw()
 
     if self._is_clicking then
         hof = -self._hoffset
+    end
+
+    if self._is_dragging then
+        hof = 0
     end
 
     if self._is_select then

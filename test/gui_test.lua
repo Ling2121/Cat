@@ -1,6 +1,7 @@
 local control = cat.require("module/gui/control/control")
 local Box = cat.require("module/gui/control/box")
 local button = cat.require("module/gui/control/button")
+local input = cat.require("module/gui/control/input")
 local scene = cat.game.new_scene()
 
 local box = Box():config_style({
@@ -12,6 +13,7 @@ local box2 = Box()
 return function()
     local control_a = control(100,100,100,40)
     local button_a = button("Button_a",150,150,100,45)
+    local input_a = input("请输入...",150,200,120,30)
     control_a._can_drag = true
     button_a._can_drag = true
     box._can_drag = true
@@ -26,9 +28,9 @@ return function()
         self:drag_mousereleased()
     end
 
-    function control_a:update()
+    function control_a:mousemoved()
         --print(self._is_dragging)
-        self:drag_update()
+        self:drag_mousemoved()
     end
 
     function control_a:__enter()
@@ -50,6 +52,7 @@ return function()
 
     box:add_control(button_a)
     box:add_control(control_a)
+    box:add_control(input_a)
     box2:add_control(box)
 
     scene:add_node(box2)
