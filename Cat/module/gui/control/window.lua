@@ -74,6 +74,8 @@ function window:__init__(title,x,y,w,h)
     box.__init__(self,x,y,w,h)
 
     self._origin.draw = nil
+    self._slide_x.is_draw_value = false
+    self._slide_y.is_draw_value = false
     box.add_control(self,self._origin)
     box.add_control(self,self._content:set_depth(-1))
     box.add_control(self,self._slide_x)
@@ -126,13 +128,8 @@ function window:add_control(control)
             control.at_box = self
             self._control:insert_node(control)
             control:set_root(self._origin)
-
-
-
-
             local w = (control.position._x + control._width) - self._content_width
             local h = (control.position._y + control._height) - self._content_height
-
             self._slide_x._min_value = math.min(0,w)
             self._slide_y._min_value = math.min(0,h)
             self._slide_x:set_max_value(math.max(0,w))

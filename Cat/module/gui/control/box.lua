@@ -4,7 +4,8 @@ local control = cat.require"module/gui/control/control"
 local box = cat.class("cat",control){
     control = nil,
     _control = nil,
-    _all_control = {}
+    _all_control = {},
+    _lock_change = false,
 }
 
 do
@@ -123,12 +124,6 @@ end
 
 function box:mousemoved(x,y,dx,dy)
     if self.control then
-        if self.control._is_clicking then
-            self.control._is_dragging = true
-            self.control:lock()
-        else
-            self.control:unlock()
-        end
         if self.control.mousemoved then
             self.control:mousemoved(x,y,dx,dy)
         end
@@ -143,6 +138,11 @@ function box:mousepressed(x,y,button)
         if self.control.mousepressed then
             self.control:mousepressed(x,y,button)
         end
+
+        if not self.control._is_lock then
+            self._lock_change = true
+            self.control:lock()
+        end
     else
         self:drag_mousepressed()
     end
@@ -153,6 +153,11 @@ function box:mousereleased(x,y,button)
         self.control:emit_signal("mouse_lift",button)
         if self.control.mousereleased then
             self.control:mousereleased(x,y,button)
+        end
+
+        if self._lock_change then
+            self._lock_change = false
+            self.control:unlock()
         end
     else
         self:drag_mousereleased()
