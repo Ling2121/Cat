@@ -14,7 +14,7 @@ local box2 = Box()
 
 return function()
     local control_a = control(100,100,100,40)
-    local button_a = button("Button_a",150,150,100,45)
+    local button_a = button("Button_a",400,300,100,45)
     local input_a = input("请输入...",150,200,120,30)
     local slide_a = slide("x",-20,100,150,250)
     local slide_b = slide("y",0,100,150,300)
@@ -57,12 +57,13 @@ return function()
     
 
 
-    box:add_control(button_a)
     box:add_control(control_a)
     box:add_control(input_a)
     box:add_control(slide_a)
     box:add_control(slide_b)
+
     box:add_control(window_a)
+    window_a:add_control(button_a)
 
     box2:add_control(box)
 

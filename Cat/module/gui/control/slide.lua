@@ -37,7 +37,7 @@ end
 
 local slide = cat.class("slide",box){
     mode = "x",
-    is_draw_value = true,
+    is_draw_value = false,
     _min_value = 0,
     _max_value = 100,
     _add_value = 0,

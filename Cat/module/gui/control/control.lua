@@ -67,11 +67,10 @@ function control:unlock()
 end
 
 function control:drag_mousepressed()
-    if self._can_drag then
+    if self._can_drag  then
         local mx,my = cat.get_mouse_position()
         self._drag_offset.x = mx - self.position._x--_x未经变换的位置
         self._drag_offset.y = my - self.position._y
-        self:lock()
     end
 end
 

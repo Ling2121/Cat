@@ -105,9 +105,7 @@ function box:update(dt)
         end
 
         if self.control then
-            local is_click = love.mouse.isDown(1)
-            self.control._is_clicking = is_click
-            self.control._is_lock = is_click
+            self.control._is_clicking = love.mouse.isDown(1)
             if self.control.update then
                 self.control:update(dt)
             end
@@ -127,6 +125,9 @@ function box:mousemoved(x,y,dx,dy)
     if self.control then
         if self.control._is_clicking then
             self.control._is_dragging = true
+            self.control:lock()
+        else
+            self.control:unlock()
         end
         if self.control.mousemoved then
             self.control:mousemoved(x,y,dx,dy)
