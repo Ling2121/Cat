@@ -133,7 +133,8 @@ function window:add_control(control)
             local w = (control.position._x + control._width) - self._content_width
             local h = (control.position._y + control._height) - self._content_height
 
-            print(w,h)
+            self._slide_x._min_value = math.min(0,w)
+            self._slide_y._min_value = math.min(0,h)
             self._slide_x:set_max_value(math.max(0,w))
             self._slide_y:set_max_value(math.max(0,h))
             control:emit_signal("add_to_box",self)
