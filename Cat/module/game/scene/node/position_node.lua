@@ -13,11 +13,18 @@ function node:__init__(x,y)
 end
 
 function node:_set_root(node)
+    if node == nil then
+        self.position:set_root(nil)
+        return
+    end
     self.position:set_root(node.position)
 end
 
 function node:set_root(node)
-    if node == nil then return end
+    if node == nil then
+        self:clear_root()
+        return 
+    end
     if self._root == node then return else
         self:clear_root()
     end
@@ -31,6 +38,7 @@ function node:clear_root()
     if self.root then
         self._root._child[self.name] = nil
     end
+    self:_set_root(nil)
     self._root = nil
     return self
 end

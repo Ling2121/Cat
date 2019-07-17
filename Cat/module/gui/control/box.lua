@@ -68,6 +68,9 @@ end
 
 function box:update(dt)
     if self._is_select then
+        for ct in self._control:eitems() do
+            self._control:_update_node_depth(ct)
+        end
         repeat
             if self.control and self.control._is_lock then
                 break
@@ -102,7 +105,9 @@ function box:update(dt)
         end
 
         if self.control then
-            self.control._is_clicking = love.mouse.isDown(1)
+            local is_click = love.mouse.isDown(1)
+            self.control._is_clicking = is_click
+            self.control._is_lock = is_click
             if self.control.update then
                 self.control:update(dt)
             end
@@ -159,6 +164,7 @@ function box:draw()
     love.graphics.setColor(self.style.color:unpack())
     love.graphics.rectangle(self.style.box_fill_mode,self.position.x,self.position.y,self._width,self._height)
     love.graphics.setColor(255,255,255,255)
+
     for ct in self._control:items() do
         if ct.draw then
             ct:draw()

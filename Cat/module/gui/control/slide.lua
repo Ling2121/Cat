@@ -8,14 +8,14 @@ function slide_button:mousepressed()
         local mx,my = cat.get_mouse_position()
         self._drag_offset.x = mx - self.position._x
         self._drag_offset.y = my - self.position._y
-        self._is_lock = true
+        self:lock()
     end
 end
 
 function slide_button:mousereleased()
     if self._can_drag then
         if self._is_dragging then
-            self._is_lock = false
+            self:unlock()
             self._is_dragging = false
         end
     end
@@ -81,13 +81,17 @@ function slide:config_style(style)
 end
 
 function slide:set_max_value(v)
-    self.max_value = v
+    self._max_value = v + math.max(0,-self._min_value)
     if self.mode == "x" then
         self._add_value = self._max_value / (self._width - self._drag_btn_size)
     elseif self.mode == "y" then
         self._add_value = self._max_value / (self._height - self._drag_btn_size)
     end
     return self
+end
+
+function slide:get_max_value()
+    return self._max_value - math.max(0,-self._min_value)
 end
 
 function slide:get_value()
@@ -101,11 +105,11 @@ function slide:get_value()
 end
 
 function slide:__click__()
-    self._is_lock = true
+    self:lock()
 end
 
 function slide:__lift__()
-    self._is_lock = false
+    self:unlock()
 end
 
 function slide:draw()

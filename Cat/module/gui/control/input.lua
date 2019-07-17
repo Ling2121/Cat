@@ -43,7 +43,7 @@ function input:config_style(style)
 end
 
 function input:__click__()
-    self._is_lock = true
+    self:lock()
 end
 
 function input:textinput(text)
@@ -56,18 +56,21 @@ end
 function input:keypressed(key)
     if self._is_lock then
         if key == "return" then
-            self.emit_signal("confirm_input",self.input_text)
-            self._is_lock = false
-            self.input = ""
+            self:emit_signal("confirm_input",self.input_text)
+            self:unlock()
+            self.input_text = ""
         end
     end
 end
 
-function input:update(dt)
+function input:mousepressed()
     if (not self:is_hover()) and love.mouse.isDown(1) then
-        self._is_lock = false
+        self:unlock()
         return
     end
+end
+
+function input:update(dt)
 
     self._remove_clock = self._remove_clock + dt
     self._cursor_clock = self._cursor_clock + dt

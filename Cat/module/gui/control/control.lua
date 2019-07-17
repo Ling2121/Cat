@@ -26,6 +26,8 @@ function control:__init__(x,y,w,h)
     self:signal("mouse_press")
     self:signal("mouse_lift")
     self:signal("add_to_box")
+    self:signal("lock")
+    self:signal("unlock")
     self:signal("remove_from_box")
 end
 
@@ -54,19 +56,29 @@ function control:is_hit(button,...)
     return (love.mouse.isDown(button,...) and self:is_hover())
 end
 
+function control:lock()
+    self:emit_signal("lock")
+    self._is_lock = true
+end
+
+function control:unlock()
+    self:emit_signal("unlock")
+    self._is_lock = false
+end
+
 function control:drag_mousepressed()
     if self._can_drag then
         local mx,my = cat.get_mouse_position()
         self._drag_offset.x = mx - self.position._x--_x未经变换的位置
         self._drag_offset.y = my - self.position._y
-        self._is_lock = true
+        self:lock()
     end
 end
 
 function control:drag_mousereleased()
     if self._can_drag then
         if self._is_dragging then
-            self._is_lock = false
+            self:unlock()
             self._is_dragging = false
         end
     end

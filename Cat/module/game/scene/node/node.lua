@@ -13,6 +13,12 @@ function node:__init__()
     self.name = self
 end
 
+function node:set_depth(d)
+    self.depth = d or self.depth
+    return self
+end
+
+
 function node:set_name(name)
     self.name = name or self.name
     return self

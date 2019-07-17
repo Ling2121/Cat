@@ -6,6 +6,15 @@ return function(x,y,root)
     }
 
     function pos:set_root(root)
+        if root == nil then
+            rawset(self,"root",nil)
+            if rawget(self,"_x") ~= nil then
+                rawset(self,"x",rawget(self,"_x"))
+                rawset(self,"y",rawget(self,"_y"))
+            end
+            return self
+        end
+
         if type(root) == "table" and root ~= self then
 			rawset(self,"root",root)
             rawset(self,"_x",rawget(self,"x"))
