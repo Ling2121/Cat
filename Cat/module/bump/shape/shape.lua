@@ -14,13 +14,10 @@ end
 function Shape:config_bump_info(id,layer)
 	self._id = id or self
 	self._layer = layer or 0
+	return self
 end
 
-function Shape:set_root(shape)
-	self:get_position():set_root(shape:get_position())
-end
-
-function Shape:move_to(x,y)
+function Shape:moveTo(x,y)
 	local cx,cy = self:center()
 	self:move(x - cx, y - cy)
 end
@@ -33,7 +30,7 @@ function Shape:rotate(angle)
 	self._rotation = self._rotation + angle
 end
 
-function Shape:set_rotation(angle, x,y)
+function Shape:setRotation(angle, x,y)
 	return self:rotate(angle - self._rotation, x,y)
 end
 

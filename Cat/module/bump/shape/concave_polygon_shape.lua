@@ -23,34 +23,35 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ]]--
-local shape = cat.require("module/bump/shape/shape")
-local convex_polygon_shape = cat.require("module/bump/shape/convex_polygon_shape")
+local Shape = cat.require("module/bump/Shape/Shape")
+local convex_polygon_shape = cat.require("module/bump/Shape/convex_polygon_shape")
 local vector = cat.require("module/bump/vector-light")
 
-local concave_polygon_shape = cat.class("concave_polygon_shape",shape){
+local ConcavePolygonShape = cat.class("concave_polygon_shape",Shape){
     _polygon = nil,
     _shapes = nil,
 }
 
-function concave_polygon_shape:__init__(poly)
-    shape.__init__(self, 'compound')
+function ConcavePolygonShape:__init__(poly)
+    Shape.__init__(self, 'compound')
 	self._polygon = poly
-	self._shapes = poly:split_convex()
+	self._shapes = poly:splitConvex()
 	for i,s in ipairs(self._shapes) do
-		self._shapes[i] = convex_polygon_shape(s)
+		local sp = convex_polygon_shape(s)
+		self._shapes[i] = sp
 	end
 end
 
-function concave_polygon_shape:collides_with(other)
+function ConcavePolygonShape:collidesWith(other)
 	if self == other then return false end
 	if other._type == 'point' then
-		return other:collides_with(self)
+		return other:collidesWith(self)
 	end
 
 	-- TODO: better way of doing this. report all the separations?
 	local collide,dx,dy = false,0,0
 	for _,s in ipairs(self._shapes) do
-		local status, sx,sy = s:collides_with(other)
+		local status, sx,sy = s:collidesWith(other)
 		collide = collide or status
 		if status then
 			if math.abs(dx) < math.abs(sx) then
@@ -64,43 +65,51 @@ function concave_polygon_shape:collides_with(other)
 	return collide, dx, dy
 end
 
-function concave_polygon_shape:contains(x,y)
+function ConcavePolygonShape:contains(x,y)
 	return self._polygon:contains(x,y)
 end
 
-function concave_polygon_shape:intersects_ray(x,y, dx,dy)
-	return self._polygon:intersects_ray(x,y, dx,dy)
+function ConcavePolygonShape:intersectsRay(x,y, dx,dy)
+	return self._polygon:intersectsRay(x,y, dx,dy)
 end
 
-function concave_polygon_shape:intersections_with_ray(x,y, dx,dy)
-	return self._polygon:intersections_with_ray(x,y, dx,dy)
+function ConcavePolygonShape:intersectionsWithRay(x,y, dx,dy)
+	return self._polygon:intersectionsWithRay(x,y, dx,dy)
 end
 
-function concave_polygon_shape:center()
+function ConcavePolygonShape:center()
 	return self._polygon.centroid.x, self._polygon.centroid.y
 end
 
-function concave_polygon_shape:get_position()
-	return self._polygon.centroid
-end
-
-function concave_polygon_shape:outcircle()
+function ConcavePolygonShape:outcircle()
 	local cx,cy = self:center()
 	return cx,cy, self._polygon._radius
 end
 
-function concave_polygon_shape:bbox()
+function ConcavePolygonShape:bbox()
 	return self._polygon:bbox()
 end
 
-function concave_polygon_shape:set_root(shape)
-	self._polygon:set_root(shape)
+function ConcavePolygonShape:move(x,y)
+	self._polygon:move(x,y)
 	for _,p in ipairs(self._shapes) do
-		p:set_root(shape)
+		p:move(x,y)
 	end
 end
 
-function concave_polygon_shape:scale(s)
+function ConcavePolygonShape:rotate(angle,cx,cy)
+	Shape.rotate(self, angle)
+	if not (cx and cy) then
+		cx,cy = self:center()
+	end
+	self._polygon:rotate(angle,cx,cy)
+	for _,p in ipairs(self._shapes) do
+		p:rotate(angle, cx,cy)
+	end
+end
+
+
+function ConcavePolygonShape:scale(s)
 	assert(type(s) == "number" and s > 0, "Invalid argument. Scale must be greater than 0")
 	local cx,cy = self:center()
 	self._polygon:scale(s, cx,cy)
@@ -111,15 +120,16 @@ function concave_polygon_shape:scale(s)
 	end
 end
 
-function concave_polygon_shape:draw(mode, wireframe)
+function ConcavePolygonShape:draw(mode, wireframe)
 	local mode = mode or 'line'
 	if mode == 'line' then
 		love.graphics.polygon('line', self._polygon:unpack())
 		if not wireframe then return end
 	end
 	for _,p in ipairs(self._shapes) do
+		love.graphics.points(p._polygon.centroid:unpack())
 		love.graphics.polygon(mode, p._polygon:unpack())
 	end
 end
 
-return concave_polygon_shape
+return ConcavePolygonShape

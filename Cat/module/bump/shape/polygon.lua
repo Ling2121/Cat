@@ -25,7 +25,7 @@ THE SOFTWARE.
 ]]--
 
 local vector = cat.require("module/bump/vector-light")
-local shape = cat.require("module/bump/shape/shape")
+local Shape = cat.require("module/bump/Shape/Shape")
 
 ----------------------------
 -- Private helper functions
@@ -131,7 +131,7 @@ local function getSharedEdge(p,q)
 	end
 end
 
-local Polygon = cat.object("polygon",shape) {
+local Polygon = cat.object("polygon",Shape) {
     vertices = nil,
     centroid = nil,
     _radius = 0,
@@ -200,13 +200,29 @@ function Polygon:__init__(...)
 			vector.dist(vertices[i].x,vertices[i].y, self.centroid.x,self.centroid.y))
 	end
 
-	for i,ver in ipairs(self.vertices) do
+	for i,ver in ipairs(vertices) do
 		ver.x = ver.x - self.centroid.x
 		ver.y = ver.y - self.centroid.y
-	 	ver:set_root(self.centroid)
+		ver:set_root(self.centroid)
 	end 
+
+
+
+	-- local min_x,min_y = math.huge,math.huge
+
+	-- for i,ver in ipairs(self.vertices) do
+	-- 	min_x = math.min(min_x,ver.x)
+	-- 	min_y = math.min(min_x,ver.y)
+	-- end
+
+	-- self.position = cat.position(min_x,min_y)
+
+	-- self.centroid.x = self.centroid.x - self.position.x
+	-- self.centroid.y = self.centroid.y - self.position.y
+	-- self.centroid:set_root(self.position)
 end
 
+-- return vertices as x1,y1,x2,y2, ..., xn,yn
 function Polygon:unpack()
 	local v = {}
 	for i = 1,#self.vertices do
@@ -216,10 +232,12 @@ function Polygon:unpack()
 	return unpack(v)
 end
 
+-- deep copy of the polygon
 function Polygon:clone()
 	return Polygon( self:unpack() )
 end
 
+-- get bounding box
 function Polygon:bbox()
 	local ulx,uly = self.vertices[1].x, self.vertices[1].y
 	local lrx,lry = ulx,uly
@@ -235,8 +253,9 @@ function Polygon:bbox()
 	return ulx,uly, lrx,lry
 end
 
-function Polygon:is_convex()
-	local function is_convex()
+-- a polygon is convex if all edges are oriented ccw
+function Polygon:isConvex()
+	local function isConvex()
 		local v = self.vertices
 		if #v == 3 then return true end
 
@@ -255,42 +274,34 @@ function Polygon:is_convex()
 	end
 
 	-- replace function so that this will only be computed once
-	local status = is_convex()
-	self.is_convex = function() return status end
+	local status = isConvex()
+	self.isConvex = function() return status end
 	return status
 end
 
 function Polygon:move(dx, dy)
-	-- if not dy then
-	-- 	dx, dy = dx:unpack()
-	-- end
-	-- for i,v in ipairs(self.vertices) do
-	-- 	v.x = v.x + dx
-	-- 	v.y = v.y + dy
-	-- end
-	-- self.centroid.x = self.centroid.x + dx
-	-- self.centroid.y = self.centroid.y + dy
-
-
-	local mp = self:get_position()
-	mp.x = mp.x + dx
-	mp.y = mp.y + dy
-end
-
-function Polygon:get_position()
-	return self.centroid
+	if not dy then
+		dx, dy = dx:unpack()
+	end
+	for i,v in ipairs(self.vertices) do
+		v.x = v.x + dx
+		v.y = v.y + dy
+	end
+	self.centroid.x = self.centroid.x + dx
+	self.centroid.y = self.centroid.y + dy
 end
 
 function Polygon:rotate(angle, cx, cy)
 	if not (cx and cy) then
 		cx,cy = self.centroid.x, self.centroid.y
 	end
-	for i,v in ipairs(self.vertices) do
-		-- v = (v - center):rotate(angle) + center
-		v.x,v.y = vector.add(cx,cy, vector.rotate(angle, v.x-cx, v.y-cy))
-	end
 	local v = self.centroid
 	v.x,v.y = vector.add(cx,cy, vector.rotate(angle, v.x-cx, v.y-cy))
+
+	for i,v in ipairs(self.vertices) do
+		-- v = (v - center):rotate(angle) + center
+		v.x,v.y = vector.rotate(angle, v.x-self.centroid.x, v.y-self.centroid.y)
+	end
 end
 
 function Polygon:scale(s, cx,cy)
@@ -304,6 +315,7 @@ function Polygon:scale(s, cx,cy)
 	self._radius = self._radius * s
 end
 
+-- triangulation by the method of kong
 function Polygon:triangulate()
 	if #self.vertices == 3 then return {self:clone()} end
 
@@ -347,7 +359,8 @@ function Polygon:triangulate()
 	return triangles
 end
 
-function Polygon:merged_with(other)
+-- return merged polygon if possible or nil otherwise
+function Polygon:mergedWith(other)
 	local p,q = getSharedEdge(self.vertices, other.vertices)
 	assert(p and q, "Polygons do not share an edge")
 
@@ -371,9 +384,14 @@ function Polygon:merged_with(other)
 	return Polygon(unpack(ret))
 end
 
-function Polygon:split_convex()
+-- split polygon into convex polygons.
+-- note that this won't be the optimal split in most cases, as
+-- finding the optimal split is a really hard problem.
+-- the method is to first triangulate and then greedily merge
+-- the triangles.
+function Polygon:splitConvex()
 	-- edge case: polygon is a triangle or already convex
-	if #self.vertices <= 3 or self:is_convex() then return {self:clone()} end
+	if #self.vertices <= 3 or self:isConvex() then return {self:clone()} end
 
 	local convex = self:triangulate()
 	local i = 1
@@ -381,8 +399,8 @@ function Polygon:split_convex()
 		local p = convex[i]
 		local k = i + 1
 		while k <= #convex do
-			local success, merged = pcall(function() return p:merged_with(convex[k]) end)
-			if success and merged:is_convex() then
+			local success, merged = pcall(function() return p:mergedWith(convex[k]) end)
+			if success and merged:isConvex() then
 				convex[i] = merged
 				p = convex[i]
 				table.remove(convex, k)
@@ -423,7 +441,7 @@ function Polygon:contains(x,y)
 	return in_polygon
 end
 
-function Polygon:intersections_with_ray(x,y, dx,dy)
+function Polygon:intersectionsWithRay(x,y, dx,dy)
 	local nx,ny = vector.perpendicular(dx,dy)
 	local wx,wy,det
 
@@ -465,9 +483,9 @@ function Polygon:intersections_with_ray(x,y, dx,dy)
 	return ts
 end
 
-function Polygon:intersects_ray(x,y, dx,dy)
+function Polygon:intersectsRay(x,y, dx,dy)
 	local tmin = math.huge
-	for _, t in ipairs(self:intersections_with_ray(x,y,dx,dy)) do
+	for _, t in ipairs(self:intersectionsWithRay(x,y,dx,dy)) do
 		tmin = math.min(tmin, t)
 	end
 	return tmin ~= math.huge, tmin

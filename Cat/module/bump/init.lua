@@ -3,7 +3,7 @@ local _concave_polygon_shape = cat.require"module/bump/shape/concave_polygon_sha
 local _circle_shape = cat.require"module/bump/shape/circle_shape"
 local _point_shape = cat.require"module/bump/shape/point_shape"
 local _polygon = cat.require"module/bump/shape/polygon"
-local _world = cat.require"module/bump/world"
+--local _world = cat.require"module/bump/world"
 
 local function new_polygon(polygon,...)
     -- create from coordinates if needed
@@ -13,7 +13,7 @@ local function new_polygon(polygon,...)
 		polygon = polygon:clone()
 	end
 
-	if polygon:is_convex() then
+	if polygon:isConvex() then
 		return _convex_polygon_shape(polygon)
 	end
 
@@ -34,7 +34,7 @@ local bump = {
     new_polygon     = new_polygon,
 	new_circle      = _circle_shape,
 	new_point       = _point_shape,
-	new_world		= _world,
+	--new_world		= _world,
 }
 
 return bump

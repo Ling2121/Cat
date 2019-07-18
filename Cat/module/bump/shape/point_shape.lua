@@ -26,16 +26,16 @@ THE SOFTWARE.
 local shape = cat.require("module/bump/shape/shape")
 local vector = cat.require("module/bump/vector-light")
 
-local point_shape = cat.class("point_shape",shape){
+local PointShape = cat.class("PointShape",shape){
     _pos = nil,
 }
 
-function point_shape:__init__(x,y)
+function PointShape:__init__(x,y)
     shape.init(self, 'point')
 	self._pos = cat.position(x,y)
 end
 
-function point_shape:collidesWith(other)
+function PointShape:collidesWith(other)
 	if self == other then return false end
 	if other._type == 'point' then
 		return (self._pos == other._pos), 0,0
@@ -43,58 +43,55 @@ function point_shape:collidesWith(other)
 	return other:contains(self._pos.x, self._pos.y), 0,0
 end
 
-function point_shape:contains(x,y)
+
+function PointShape:contains(x,y)
 	return x == self._pos.x and y == self._pos.y
 end
 
 -- point shape intersects ray if it lies on the ray
-function point_shape:intersects_ray(x,y, dx,dy)
+function PointShape:intersectsRay(x,y, dx,dy)
 	local px,py = self._pos.x-x, self._pos.y-y
 	local t = px/dx
 	-- see (px,py) and (dx,dy) point in same direction
 	return (t == py/dy), t
 end
 
-function point_shape:intersections_with_ray(x,y, dx,dy)
-	local intersects, t = self:intersects_ray(x,y, dx,dy)
+function PointShape:intersectionsWithRay(x,y, dx,dy)
+	local intersects, t = self:intersectsRay(x,y, dx,dy)
 	return intersects and {t} or {}
 end
 
-function point_shape:center()
+function PointShape:center()
 	return self._pos.x, self._pos.y
 end
 
-function point_shape:get_position()
-	return self._pos
-end
-
-function point_shape:outcircle()
+function PointShape:outcircle()
 	return self._pos.x, self._pos.y, 0
 end
 
-function point_shape:bbox()
+function PointShape:bbox()
 	local x,y = self:center()
 	return x,y,x,y
 end
 
 
-function point_shape:move(x,y)
+function PointShape:move(x,y)
 	self._pos.x = self._pos.x + x
 	self._pos.y = self._pos.y + y
 end
 
-function point_shape:rotate(angle, cx,cy)
-	shape.rotate(self, angle)
+function PointShape:rotate(angle, cx,cy)
+	Shape.rotate(self, angle)
 	if not (cx and cy) then return end
 	self._pos.x,self._pos.y = vector.add(cx,cy, vector.rotate(angle, self._pos.x-cx, self._pos.y-cy))
 end
 
-function point_shape:scale()
+function PointShape:scale()
 	-- nothing
 end
 
-function point_shape:draw()
+function PointShape:draw()
 	love.graphics.point(self:center())
 end
 
-return point_shape
+return PointShape

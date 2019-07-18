@@ -30,23 +30,23 @@ local GJK = cat.require("module/bump/gjk")
 
 local math_min, math_sqrt, math_huge = math.min, math.sqrt, math.huge
 
-local circle_shape = cat.class("circle_shape",Shape){
+local CircleShape = cat.class("circle_shape",Shape){
     _center = nil,
     _radius = nil,
 }
 
-function circle_shape:__init__(cx,cy, radius)
+function CircleShape:__init__(cx,cy, radius)
 	Shape.__init__(self, 'circle')
 	self._center = cat.position(cx,cy)
 	self._radius = radius
 end
 
-function circle_shape:support(dx,dy)
+function CircleShape:support(dx,dy)
 	return vector.add(self._center.x, self._center.y,
 		vector.mul(self._radius, vector.normalize(dx,dy)))
 end
 
-function circle_shape:collides_with(other)
+function CircleShape:collidesWith(other)
 	if self == other then return false end
 	if other._type == 'circle' then
 		local px,py = self._center.x-other._center.x, self._center.y-other._center.y
@@ -64,15 +64,23 @@ function circle_shape:collides_with(other)
 	end
 
 	-- else: let the other shape decide
-	local collide, sx,sy = other:collides_with(self)
+	local collide, sx,sy = other:collidesWith(self)
 	return collide, sx and -sx, sy and -sy
 end
 
-function circle_shape:contains(x,y)
+function CircleShape:contains(x,y)
 	return vector.len2(x-self._center.x, y-self._center.y) < self._radius * self._radius
 end
 
-function circle_shape:intersections_with_ray(x,y, dx,dy)
+
+-- circle intersection if distance of ray/center is smaller
+-- than radius.
+-- with r(s) = p + d*s = (x,y) + (dx,dy) * s defining the ray and
+-- (x - cx)^2 + (y - cy)^2 = r^2, this problem is eqivalent to
+-- solving [with c = (cx,cy)]:
+--
+--     d*d s^2 + 2 d*(p-c) s + (p-c)*(p-c)-r^2 = 0
+function CircleShape:intersectionsWithRay(x,y, dx,dy)
 	local pcx,pcy = x-self._center.x, y-self._center.y
 
 	local a = vector.len2(dx,dy)
@@ -89,51 +97,48 @@ function circle_shape:intersections_with_ray(x,y, dx,dy)
 	return ts
 end
 
-function circle_shape:intersects_ray(x,y, dx,dy)
+function CircleShape:intersectsRay(x,y, dx,dy)
 	local tmin = math_huge
-	for _, t in ipairs(self:intersections_with_ray(x,y,dx,dy)) do
+	for _, t in ipairs(self:intersectionsWithRay(x,y,dx,dy)) do
 		tmin = math_min(t, tmin)
 	end
 	return tmin ~= math_huge, tmin
 end
 
-function circle_shape:center()
+function CircleShape:center()
 	return self._center.x, self._center.y
 end
 
-function circle_shape:get_position()
-	return self._center
-end
-
-function circle_shape:outcircle()
+function CircleShape:outcircle()
 	local cx,cy = self:center()
 	return cx,cy, self._radius
 end
 
-function circle_shape:bbox()
+function CircleShape:bbox()
 	local cx,cy = self:center()
 	local r = self._radius
 	return cx-r,cy-r, cx+r,cy+r
 end
 
-function circle_shape:move(x,y)
+function CircleShape:move(x,y)
 	self._center.x = self._center.x + x
 	self._center.y = self._center.y + y
 end
 
-function circle_shape:rotate(angle, cx,cy)
+function CircleShape:rotate(angle, cx,cy)
 	Shape.rotate(self, angle)
 	if not (cx and cy) then return end
 	self._center.x,self._center.y = vector.add(cx,cy, vector.rotate(angle, self._center.x-cx, self._center.y-cy))
 end
 
-function circle_shape:scale(s)
+
+function CircleShape:scale(s)
 	assert(type(s) == "number" and s > 0, "Invalid argument. Scale must be greater than 0")
 	self._radius = self._radius * s
 end
 
-function circle_shape:draw(mode, segments)
+function CircleShape:draw(mode, segments)
 	love.graphics.circle(mode or 'line', self:outcircle())
 end
 
-return circle_shape
+return CircleShape
