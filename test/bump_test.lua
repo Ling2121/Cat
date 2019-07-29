@@ -1,11 +1,17 @@
 return function()
     --local world = cat.bump.new_world()
-    local obj_a = cat.bump.new_rectangle(100,100,100,100)
+    local obj_a = cat.bump.new_rectangle(0,0,100,100)
 
     local obj_b = cat.bump.new_polygon(100,100,149,41,185,193,144,136,25,118)
     --obj_b:set_root(obj_a)
+    local p = cat.position(100,100)
 
-    obj_b:rotate(math.rad(90))
+    obj_a:rotate(math.rad(45))
+    obj_a:rotate(math.rad(55))
+    obj_a:rotate(math.rad(90))
+
+    --obj_a._polygon.centroid:set_root(p)
+    --obj_a
 
     
 
@@ -36,7 +42,10 @@ return function()
         -- obj_a._polygon.centroid.y = obj_a._polygon.centroid.y + vy * dt
         obj_a:rotate(dt)
         obj_b:rotate(dt)
-        --obj_a:move(vx * dt,vy * dt)
+        
+        --p.x = p.x + (vx * dt)
+        --p.y = p.y + (vy * dt)
+        obj_a:move(vx * dt,vy * dt)
     end
 
     love.graphics.setPointSize(5)
@@ -53,7 +62,7 @@ return function()
         -- obj_c:draw()
         -- love.graphics.setColor(255,255,255,255)
 
-        love.graphics.points(obj_a._polygon.centroid:unpack())
-        -- love.graphics.points(obj_b._polygon.centroid:unpack())
+        --love.graphics.points(obj_a._polygon.position:unpack())
+        --love.graphics.points(obj_b._polygon.position:unpack())
     end
 end
